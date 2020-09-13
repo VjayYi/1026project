@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#e6e6e6"
+    tools:context=".activity.PrivacyActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        style="@style/ToolbarStyle"
+        android:background="@color/colorPrimary"
+        android:id="@+id/toolbar"
+        >
+
+        <TextView
+            style="@style/ToolbarTitleStyle"
+            android:text="Kebijakan Privasi"
+            android:textSize="18sp"
+            />
+    </androidx.appcompat.widget.Toolbar>
+    <WebView
+        android:id="@+id/web"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#e6e6e6"
+        />
+</LinearLayout>

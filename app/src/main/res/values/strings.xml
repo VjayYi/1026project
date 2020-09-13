@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Butuh Uang</string>
+
+    <string name="no_network">There is no valid internet</string>
+    <string name="agree_privacy">Saya telah membaca dan menyetujui \"</string>
+    <string name="privacy">Kebijakan Privasi</string>
+    <string name="yinhao">\"</string>
+    <string name="have_not_check_privacy">Silahkan menyetujui \"Kebijakan Privasi\"</string>
+    <string name="invalid_phone_number">Harap masukkan nomor telepon yang benar</string>
+    <string name="enter_your_mobile_number">Masukkan nomor ponsel anda</string>
+    <string name="verification_code">Kode verifikasi</string>
+    <string name="get_vcode">Kirim kode OTP</string>
+    <string name="enter">Masuk</string>
+    <string name="home">Beranda</string>
+    <string name="mine">Profil Saya</string>
+    <string name="f_q"><![CDATA[F&Q]]></string>
+    <!--    快速贷款-->
+    <string name="quick_loan">Segera Pinjam</string>
+    <string name="no_rating_content">Silakan beri rating untuk Butuh Uang</string>
+    <string name="hint_feedback">Terima kasih atas tanggapan Anda, kami akan terus meningkatkan fitur aplikasi!</string>
+</resources>

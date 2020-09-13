@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".activity.MainActivity">
+
+    <FrameLayout
+        android:id="@+id/frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="51dp" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#cccccc"
+        android:layout_above="@+id/rg_tab"/>
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:id="@+id/rg_tab"
+        >
+        <RadioButton
+            android:id="@+id/rb_home"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/check_tab_home"
+            android:text="@string/home"
+            android:textColor="@color/color_999_green"
+            android:drawablePadding="5dp"
+            android:paddingTop="8dp"
+            android:gravity="center_horizontal"
+            android:textSize="9sp"
+            android:button="@null"
+            android:checked="true"
+            />
+
+        <RadioButton
+            android:id="@+id/rb_mine"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/check_tab_my"
+            android:text="@string/mine"
+            android:textColor="@color/color_999_green"
+            android:drawablePadding="5dp"
+            android:paddingTop="8dp"
+            android:gravity="center_horizontal"
+            android:textSize="9sp"
+            android:button="@null"
+            />
+    </RadioGroup>
+
+</RelativeLayout>

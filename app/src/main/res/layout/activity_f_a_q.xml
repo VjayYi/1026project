@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.FAQActivity">
+    <androidx.appcompat.widget.Toolbar
+        style="@style/ToolbarStyle"
+        android:background="@color/colorPrimary"
+        android:id="@+id/toolbar"
+        >
+
+        <TextView
+            style="@style/ToolbarTitleStyle"
+            android:text="FAQ"
+            android:textSize="18sp"
+            />
+    </androidx.appcompat.widget.Toolbar>
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/smart"
+        >
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/rv_data"
+            />
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+</LinearLayout>

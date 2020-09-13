@@ -1,0 +1,73 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowNoTitle">true</item><!--不显示应用程序标题栏 -->
+        <item name="android:windowIsTranslucent">true</item><!-- 半透明-->
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textColorPrimary">@android:color/black</item>
+        <item name="actionMenuTextAppearance">@style/FruitThemeMenuTextStyle</item>
+        <item name="android:textColorSecondary">@android:color/white</item> <!-- menu三个点的颜色 -->
+        <item name="actionOverflowMenuStyle">@style/OverflowMenuStyle</item> <!-- 新增一个style，用于控制menu -->
+    </style>
+
+
+    <style name="OverflowMenuStyle" parent="Widget.AppCompat.Light.PopupMenu.Overflow">
+        <item name="overlapAnchor">false</item>  <!-- 把该属性改为false即可使menu位置位于toolbar之下 -->
+    </style>
+
+    <style name="FruitThemeMenuTextStyle">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+
+    <!--工具栏样式-->
+    <style name="ToolbarStyle" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:paddingTop">22dp</item>
+        <item name="navigationIcon">@mipmap/back_white</item>
+    </style>
+
+    <!--工具栏标题样式-->
+    <style name="ToolbarTitleStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <!-- 自定义LoadingDialog -->
+    <style name="LoadingDialog" parent="android:style/Theme.Dialog">
+        <!-- Dialog的背景颜色 -->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!-- 是否去除标题 -->
+        <item name="android:windowNoTitle">true</item>
+        <!-- 是否去除边框 -->
+        <item name="android:windowFrame">@null</item>
+        <!-- 是否浮现在activity之上 -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 是否模糊 -->
+        <item name="android:backgroundDimEnabled">false</item>
+        <!-- 是否半透明 -->
+        <item name="android:windowIsTranslucent">false</item>
+    </style>
+
+    <!-- 使用默认的黑暗程度0.6 -->
+    <style name="dim_dialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <!-- 无标题，设置的是decorview的背景色 -->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!-- 默认是有阴影背景的,加以下属性可以改变阴影度阴影 -->
+    </style>
+</resources>

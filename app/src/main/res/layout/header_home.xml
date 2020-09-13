@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:background="@mipmap/test_bg"
+    >
+    <ImageView
+        android:id="@+id/testText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/test_txt"
+        android:layout_centerInParent="true"
+        />
+    <ImageView
+        android:id="@+id/testButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/test_button"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="6dp"
+        />
+    <TextView
+        android:id="@+id/tv_money"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="RpXXXX"
+        android:layout_centerInParent="true"
+        android:textColor="@color/color_FFCF4F"
+        android:textStyle="bold"
+        android:textSize="28sp"
+        android:visibility="gone"
+        />
+    <TextView
+        android:id="@+id/text_limit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Limit Pinjaman Anda  "
+        android:layout_alignRight="@+id/tv_money"
+        android:textColor="@color/color_FFCF4F"
+        android:textStyle="bold"
+        android:textSize="22sp"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+        />
+</RelativeLayout>
