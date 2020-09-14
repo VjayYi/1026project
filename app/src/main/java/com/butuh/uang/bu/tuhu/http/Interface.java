@@ -37,4 +37,7 @@ public interface Interface {
 
     @POST("accessCatalog")
     Observable<BaseResult<PageTableBean<PrivacyBean>>> accessCatalog(@Body RequestBody body);
+
+    @POST("happenlog")
+    Observable<BaseResult> happenlog(@Body RequestBody body);
 }

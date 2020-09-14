@@ -6,7 +6,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.butuh.uang.bu.tuhu.R;
+import com.butuh.uang.bu.tuhu.bean.ProductBean;
+import com.butuh.uang.bu.tuhu.util.GlideUtil;
 import com.makeramen.roundedimageview.RoundedImageView;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -27,6 +31,17 @@ public class ZhaoHuiDialog extends BaseDialog {
     RoundedImageView ivAnniu3;
     @BindView(R.id.anniu3)
     LinearLayout anniu3;
+
+    private List<ProductBean> datas;
+    private OnItemClickListener listener;
+
+    public OnItemClickListener getListener() {
+        return listener;
+    }
+
+    public void setListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
 
     public ZhaoHuiDialog(Context context) {
         super(context,R.style.dim_dialog);
@@ -62,14 +77,54 @@ public class ZhaoHuiDialog extends BaseDialog {
         switch (view.getId()) {
             case R.id.anniu1:
                 //去下载
+                if (listener!=null){
+                    listener.onClick(datas.get(0));
+                }
                 break;
             case R.id.anniu2:
+                if (listener!=null){
+                    listener.onClick(datas.get(1));
+                }
                 break;
             case R.id.anniu3:
+                if (listener!=null){
+                    listener.onClick(datas.get(2));
+                }
                 break;
             case R.id.iv_close:
                 dismiss();
                 break;
         }
+    }
+
+    public void setData(List<ProductBean> datas){
+        this.datas=datas;
+        switch (datas.size()) {
+            case 1:
+                anniu1.setVisibility(View.VISIBLE);
+                anniu2.setVisibility(View.GONE);
+                anniu3.setVisibility(View.GONE);
+                GlideUtil.loadImage(mContext,datas.get(0).getCharacteristic(),ivAnniu1);
+                break;
+            case 2:
+                anniu1.setVisibility(View.VISIBLE);
+                anniu2.setVisibility(View.VISIBLE);
+                anniu3.setVisibility(View.GONE);
+                GlideUtil.loadImage(mContext,datas.get(0).getCharacteristic(),ivAnniu1);
+                GlideUtil.loadImage(mContext,datas.get(1).getCharacteristic(),ivAnniu2);
+                break;
+            case 3:
+                anniu1.setVisibility(View.VISIBLE);
+                anniu2.setVisibility(View.VISIBLE);
+                anniu3.setVisibility(View.VISIBLE);
+                GlideUtil.loadImage(mContext,datas.get(0).getCharacteristic(),ivAnniu1);
+                GlideUtil.loadImage(mContext,datas.get(1).getCharacteristic(),ivAnniu2);
+                GlideUtil.loadImage(mContext,datas.get(2).getCharacteristic(),ivAnniu3);
+                break;
+        }
+    }
+
+    public interface OnItemClickListener{
+        void onClick(ProductBean p);
     }
 }

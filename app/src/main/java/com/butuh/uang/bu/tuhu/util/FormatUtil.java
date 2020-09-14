@@ -26,6 +26,27 @@ public class FormatUtil {
                 .replace(",",".");
     }
 
+    public static String formatMoneyNoUnit(double money){
+        DecimalFormat formatter = new DecimalFormat("###,###.##");
+        return formatter.format(money)
+                .replace(",","-")
+                .replace(".",",")
+                .replace("-",".");
+    }
+
+    public static String formatMoneyNoUnit(int money){
+        DecimalFormat formatter = new DecimalFormat("###,###.##");
+        return formatter.format(money)
+                .replace(",",".");
+    }
+
+    public static String formatMoneyNoUnit(String money){
+        int data=NumberUtil.pasrInt(money);
+        DecimalFormat formatter = new DecimalFormat("###,###.##");
+        return formatter.format(data)
+                .replace(",",".");
+    }
+
     public static String formatRate(String rate){
         BigDecimal db=new BigDecimal(rate);
         db=db.multiply(new BigDecimal(100));

@@ -20,11 +20,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class PopSelection extends PopupWindow {
 
-    private BaseQuickAdapter.OnItemClickListener listener;
+    private OnItemClickListener listener;
     private RecyclerView rvData;
     private NumberAdapter adapter;
 
-    public void setListener(BaseQuickAdapter.OnItemClickListener listener) {
+    public void setListener(OnItemClickListener listener) {
         this.listener = listener;
     }
 
@@ -44,7 +44,14 @@ public class PopSelection extends PopupWindow {
         adapter=new NumberAdapter();
         rvData.setAdapter(adapter);
 
-        adapter.setOnItemClickListener(listener);
+        adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter a, View view, int position) {
+                if (listener!=null){
+                    listener.onItemClick(adapter.getItem(position));
+                }
+            }
+        });
     }
 
     public void setData(List<String> data){
@@ -55,4 +62,7 @@ public class PopSelection extends PopupWindow {
         adapter.setNewData(data);
     }
 
+    public interface OnItemClickListener{
+        void onItemClick(String data);
+    }
 }

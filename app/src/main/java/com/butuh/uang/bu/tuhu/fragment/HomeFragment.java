@@ -36,7 +36,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
@@ -139,7 +141,8 @@ public class HomeFragment extends BaseFragment {
         adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter a, View view, int position) {
-                SharedPreferencesUtil.saveHistory(adapter.getItem(position));
+                //SharedPreferencesUtil.saveHistory(adapter.getItem(position));
+                uploadClickEvent(position);
                 startActivity(new Intent(mBaseActivity, ProductDetailActivity.class).putExtra("DataID",adapter.getItem(position).getSerialNumber()));
             }
         });
@@ -273,6 +276,23 @@ public class HomeFragment extends BaseFragment {
                     mRefreshLayout.finishRefresh();
                 else
                     mRefreshLayout.finishLoadMore();
+                ToastUtil.showShortToast(throwable.getMessage());
+            }
+        });
+    }
+
+    private void uploadClickEvent(int position){
+        String param="[[\"reconstruct\",\"[\\\""+ UUID.randomUUID().toString() +"\\\", \\\"reconstruct\\\", \\\"product_list\\\", \\\""+position+"\\\"]\","+new Date().getTime() +",\""+adapter.getItem(position).getSerialNumber()+"\"]]";
+        RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), param);
+        Observable<BaseResult> observable= HttpUtil.createService(Interface.class).happenlog(body);
+        HttpUtil.httpCallback(mBaseActivity, observable, new HttpCallback() {
+            @Override
+            public void success(Object result, String message) {
+
+            }
+
+            @Override
+            public void failure(String code, Throwable throwable) {
                 ToastUtil.showShortToast(throwable.getMessage());
             }
         });

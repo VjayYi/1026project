@@ -9,13 +9,21 @@ import com.butuh.uang.bu.tuhu.R;
 import com.butuh.uang.bu.tuhu.adapter.DownloadListAdapter;
 import com.butuh.uang.bu.tuhu.app.ProjectApplication;
 import com.butuh.uang.bu.tuhu.base.BaseActivity;
+import com.butuh.uang.bu.tuhu.bean.PageTableBean;
 import com.butuh.uang.bu.tuhu.bean.ProductBean;
+import com.butuh.uang.bu.tuhu.http.HttpCallback;
+import com.butuh.uang.bu.tuhu.http.HttpUtil;
+import com.butuh.uang.bu.tuhu.http.Interface;
+import com.butuh.uang.bu.tuhu.result.BaseResult;
 import com.butuh.uang.bu.tuhu.util.SharedPreferencesUtil;
-import com.chad.library.afresh.layout.api.RefreshLayout;
+import com.butuh.uang.bu.tuhu.util.ToastUtil;
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.google.gson.Gson;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
-import com.scwang.smartredapter.base.BaseQuickAdapter;
 import com.scwang.smartrefresh.layout.listener.OnRefreshLoadMoreListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -24,6 +32,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 public class DownloadHistoryActivity extends BaseActivity {
 
@@ -33,6 +45,7 @@ public class DownloadHistoryActivity extends BaseActivity {
     RecyclerView rvData;
 
     private DownloadListAdapter adapter;
+    private int page=1;
 
     @Override
     public void getIntentData() {
@@ -71,10 +84,17 @@ public class DownloadHistoryActivity extends BaseActivity {
             }
         });
 
-        mRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
+        mRefreshLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListener() {
 
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+                page=1;
+                loadData();
+            }
+
+            @Override
+            public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
+                page++;
                 loadData();
             }
         });
@@ -96,7 +116,38 @@ public class DownloadHistoryActivity extends BaseActivity {
     }
 
     private void loadData(){
-        List<ProductBean> list= SharedPreferencesUtil.getHistory();
-        adapter.setNewData(list);
+//        List<ProductBean> list= SharedPreferencesUtil.getHistory();
+//        adapter.setNewData(list);
+        String param="[[\"393\",\"2\"],[\"396\",\""+page+"\"],[\"397\",\"10\"]]";
+        RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), param);
+        Observable<BaseResult<PageTableBean<ProductBean>>> observable= HttpUtil.createService(Interface.class).getProductList(body);
+        HttpUtil.httpCallback(mBaseActivity, observable, new HttpCallback<PageTableBean<ProductBean>>() {
+            @Override
+            public void success(PageTableBean<ProductBean> result, String message) {
+                if(mRefreshLayout==null)
+                    return;
+                if(page==1)
+                    mRefreshLayout.finishRefresh();
+                else
+                    mRefreshLayout.finishLoadMore();
+                mRefreshLayout.setEnableLoadMore(result.haveMore());
+                if (adapter.getEmptyViewCount()==0){
+                    adapter.setEmptyView(View.inflate(mBaseActivity,R.layout.empty_no_product,null));
+                }
+                if (page==1)
+                    adapter.setNewData(result.getKuantitas());
+                else
+                    adapter.addData(result.getKuantitas());
+            }
+
+            @Override
+            public void failure(String code, Throwable throwable) {
+                if(page==1)
+                    mRefreshLayout.finishRefresh();
+                else
+                    mRefreshLayout.finishLoadMore();
+                ToastUtil.showShortToast(throwable.getMessage());
+            }
+        });
     }
 }
