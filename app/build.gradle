@@ -25,6 +25,35 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    signingConfigs {
+        debug {
+            keyAlias '1026'
+            keyPassword '123212321'
+            storeFile file('butuh.jks')
+            storePassword '123212321'
+        }
+
+        release {
+            keyAlias '1026'
+            keyPassword '123212321'
+            storeFile file('butuh.jks')
+            storePassword '123212321'
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            def fileName = "1026Butuh" + "_v${defaultConfig.versionCode}_" +
+                    releaseTime() + "_" + variant.name +
+                    ".apk"
+            outputFileName = fileName
+        }
+    }
+}
+
+static def releaseTime() {
+    return new Date().format("yyyyMMddhhMM", TimeZone.getTimeZone("UTC"))
 }
 
 dependencies {
