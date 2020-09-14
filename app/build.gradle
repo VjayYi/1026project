@@ -44,9 +44,7 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            def fileName = "1026Butuh" + "_v${defaultConfig.versionCode}_" +
-                    releaseTime() + "_" + variant.name +
-                    ".apk"
+            def fileName = "1026Butuh" + "_v${defaultConfig.versionCode}_" +releaseTime() + "_" + variant.name +".apk"
             outputFileName = fileName
         }
     }
