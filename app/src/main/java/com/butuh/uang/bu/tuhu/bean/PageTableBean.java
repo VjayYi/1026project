@@ -1,8 +1,5 @@
 package com.butuh.uang.bu.tuhu.bean;
 
-import com.butuh.uang.bu.tuhu.util.CommonUtil;
-import com.butuh.uang.bu.tuhu.util.NumberUtil;
-
 import java.util.List;
 
 public class PageTableBean<T> {

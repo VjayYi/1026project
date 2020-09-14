@@ -87,17 +87,11 @@ public class DownloadHistoryActivity extends BaseActivity {
             }
         });
 
-        mRefreshLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListener() {
+        mRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
 
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
                 page=1;
-                loadData();
-            }
-
-            @Override
-            public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
-                page++;
                 loadData();
             }
         });
@@ -121,7 +115,8 @@ public class DownloadHistoryActivity extends BaseActivity {
     private void loadData(){
 //        List<ProductBean> list= SharedPreferencesUtil.getHistory();
 //        adapter.setNewData(list);
-        String param="[[\"393\",\"2\"],[\"396\",\""+page+"\"],[\"397\",\"10\"]]";
+        //,["397","10"]
+        String param="[[\"393\",\"2\"],[\"396\",\""+page+"\"]]";
         RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), param);
         Observable<BaseResult<PageTableBean<ProductBean>>> observable= HttpUtil.createService(Interface.class).getProductList(body);
         HttpUtil.httpCallback(mBaseActivity, observable, new HttpCallback<PageTableBean<ProductBean>>() {
@@ -133,7 +128,7 @@ public class DownloadHistoryActivity extends BaseActivity {
                     mRefreshLayout.finishRefresh();
                 else
                     mRefreshLayout.finishLoadMore();
-                mRefreshLayout.setEnableLoadMore(result.haveMore());
+//                mRefreshLayout.setEnableLoadMore(result.haveMore());
                 if (adapter.getEmptyViewCount()==0){
                     adapter.setEmptyView(View.inflate(mBaseActivity,R.layout.empty_no_product,null));
                 }
