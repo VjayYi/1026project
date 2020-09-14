@@ -27,7 +27,6 @@ import com.butuh.uang.bu.tuhu.http.HttpCallback;
 import com.butuh.uang.bu.tuhu.http.HttpUtil;
 import com.butuh.uang.bu.tuhu.http.Interface;
 import com.butuh.uang.bu.tuhu.result.BaseResult;
-import com.butuh.uang.bu.tuhu.util.AppInfoUtil;
 import com.butuh.uang.bu.tuhu.util.FormatUtil;
 import com.butuh.uang.bu.tuhu.util.GoogleDownloadEvent;
 import com.butuh.uang.bu.tuhu.util.RecyclerviewUtil;
@@ -185,14 +184,14 @@ public class HomeFragment extends BaseFragment {
                 loadData();
             }
         });
-        adapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
+        /*adapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
             @Override
             public void onLoadMoreRequested() {
                 isFirstLoad=false;
                 page++;
                 loadData();
             }
-        });
+        });*/
 
     }
 
@@ -283,10 +282,10 @@ public class HomeFragment extends BaseFragment {
         data.add("396");
         data.add(page + "");
         list.add(data);
-        List<String> data1 = new ArrayList<>();
+        /*List<String> data1=new ArrayList<>();
         data1.add("397");
-        data1.add(10 + "");
-        list.add(data1);
+        data1.add(10+"");
+        list.add(data1);*/
         RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), new Gson().toJson(list));
         Observable<BaseResult<PageTableBean<ProductBean>>> observable = HttpUtil.createService(Interface.class).getProductList(body);
         HttpUtil.httpCallback(mBaseActivity, observable, new HttpCallback<PageTableBean<ProductBean>>() {
@@ -304,7 +303,7 @@ public class HomeFragment extends BaseFragment {
                 }
                 if (adapter==null)
                     return;
-                adapter.setEnableLoadMore(result.haveMore());
+//                adapter.setEnableLoadMore(result.haveMore());
                 footer.setVisibility(result.haveMore()?View.GONE:View.VISIBLE);
                 /*if (adapter.getEmptyViewCount()==0){
                 }*/
@@ -315,13 +314,13 @@ public class HomeFragment extends BaseFragment {
                     adapter.addData(result.getKuantitas());
 
                 if (page==1&&!isUploadEvent){
+                    rvData.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            homeLoadCompleted();
+                        }
+                    });
                 }
-                rvData.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        homeLoadCompleted();
-                    }
-                });
             }
 
             @Override

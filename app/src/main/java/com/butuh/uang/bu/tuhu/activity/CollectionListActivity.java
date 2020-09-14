@@ -20,6 +20,7 @@ import com.butuh.uang.bu.tuhu.util.ToastUtil;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.gson.Gson;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshLoadMoreListener;
 
 import org.greenrobot.eventbus.EventBus;
@@ -92,12 +93,7 @@ public class CollectionListActivity extends BaseActivity {
             }
         });
 
-        mRefreshLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListener() {
-            @Override
-            public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
-                page++;
-                loadData();
-            }
+        mRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
 
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
@@ -122,23 +118,9 @@ public class CollectionListActivity extends BaseActivity {
         showPopShare(share);
     }
 
-
-
     private void loadData(){
-        List<List<String>> list=new ArrayList<>();
-        List<String> data=new ArrayList<>();
-        data.add("396");
-        data.add(page+"");
-        list.add(data);
-        List<String> data1=new ArrayList<>();
-        data1.add("397");
-        data1.add(10+"");
-        list.add(data1);
-        List<String> data2=new ArrayList<>();
-        data2.add("394");
-        data2.add(2+"");
-        list.add(data2);
-        RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), new Gson().toJson(list));
+        String param="[[\"396\",1],[\"394\",\"2\"]]";
+        RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), param);
         Observable<BaseResult<PageTableBean<ProductBean>>> observable= HttpUtil.createService(Interface.class).getProductList(body);
         HttpUtil.httpCallback(mBaseActivity, observable, new HttpCallback<PageTableBean<ProductBean>>() {
             @Override
@@ -147,9 +129,7 @@ public class CollectionListActivity extends BaseActivity {
                     return;
                 if(page==1)
                     mRefreshLayout.finishRefresh();
-                else
-                    mRefreshLayout.finishLoadMore();
-                mRefreshLayout.setEnableLoadMore(result.haveMore());
+//                mRefreshLayout.setEnableLoadMore(result.haveMore());
                 if (adapter.getEmptyViewCount()==0){
                     adapter.setEmptyView(View.inflate(mBaseActivity,R.layout.empty_no_product,null));
                 }
@@ -163,8 +143,6 @@ public class CollectionListActivity extends BaseActivity {
             public void failure(String code, Throwable throwable) {
                 if(page==1)
                     mRefreshLayout.finishRefresh();
-                else
-                    mRefreshLayout.finishLoadMore();
                 ToastUtil.showShortToast(throwable.getMessage());
             }
         });
