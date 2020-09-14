@@ -9,6 +9,7 @@ import com.butuh.uang.bu.tuhu.http.HttpUtil;
 import com.butuh.uang.bu.tuhu.http.Interface;
 import com.butuh.uang.bu.tuhu.result.BaseResult;
 import com.butuh.uang.bu.tuhu.util.SharedPreferencesUtil;
+import com.facebook.FacebookSdk;
 import com.butuh.uang.bu.tuhu.util.ToastUtil;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.DefaultRefreshFooterCreator;
@@ -21,6 +22,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import androidx.annotation.NonNull;
+import androidx.multidex.MultiDex;
 import io.reactivex.Observable;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
@@ -51,8 +53,8 @@ public class ProjectApplication extends Application {
     }
 
     public static ProjectApplication getInstance() {
-        if (instance==null){
-            instance=new ProjectApplication();
+        if (instance == null) {
+            instance = new ProjectApplication();
         }
         return instance;
     }
@@ -60,8 +62,10 @@ public class ProjectApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        sessionid= UUID.randomUUID().toString();
+        sessionid = UUID.randomUUID().toString();
         instance = this;
+        FacebookSdk.setApplicationId("752991955496632");
+        FacebookSdk.sdkInitialize(this);
 
         appStartEvent();
     }
@@ -76,16 +80,23 @@ public class ProjectApplication extends Application {
         return sessionid;
     }
 
-    public boolean isUserLogin(){
-        String phone= SharedPreferencesUtil.getStringData("phone");
+    public boolean isUserLogin() {
+        String phone = SharedPreferencesUtil.getStringData("phone");
         if (TextUtils.isEmpty(phone))
             return false;
         else
             return true;
     }
 
-    public String getPhone(){
+    public String getPhone() {
         return SharedPreferencesUtil.getStringData("phone");
+    }
+
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
     private void appStartEvent(){

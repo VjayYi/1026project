@@ -13,20 +13,20 @@ import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 
-public class ProductListAdapter extends BaseQuickAdapter<ProductBean,BaseViewHolder> {
+public class ProductListAdapter extends BaseQuickAdapter<ProductBean, BaseViewHolder> {
 
     public ProductListAdapter() {
-        super(R.layout.item_product,new ArrayList());
+        super(R.layout.item_product, new ArrayList());
     }
 
     @Override
     protected void convert(@NonNull BaseViewHolder helper, ProductBean item) {
-        if (item==null)
+        if (item == null)
             return;
-        GlideUtil.loadImage(mContext,item.getCharacteristic(),helper.getView(R.id.logo));
-        helper.getView(R.id.iv_collection).setSelected(item.getFavorited()==1);
-        helper.addOnClickListener(R.id.iv_collection,R.id.quick_loan)
-                .setText(R.id.tv_name,item.getDesignation())
+        GlideUtil.loadImage(mContext, item.getCharacteristic(), helper.getView(R.id.logo));
+        helper.getView(R.id.iv_collection).setSelected(item.getFavorited() == 1);
+        helper.addOnClickListener(R.id.iv_collection, R.id.quick_loan)
+                .setText(R.id.tv_name, item.getDesignation())
                 .setText(R.id.tv_money, FormatUtil.formatMoney(item.getDisplayLargestAmountOfMoney()))
                 .setText(R.id.tv_rate,"Acuan Bunga "+FormatUtil.formatRate(item.getShowLoanCycle()))
                 .setText(R.id.quick_loan, isAppInstalled(item)?"Buka":"Segera Pinjam")

@@ -112,7 +112,7 @@ public class HttpUtil {
                         @Override
                         public Response intercept(Chain chain) throws IOException {
 
-                            HeaderParam param=new HeaderParam();
+                            HeaderParam param = new HeaderParam();
 //                            param.toJson();
                             Request request = chain.request()
                                     .newBuilder()
@@ -125,7 +125,8 @@ public class HttpUtil {
                                     .build();
                             return chain.proceed(request);
                         }
-                    }).build();
+                    })
+                    .addInterceptor(logging).build();
 
 
             if (CommonUtil.isApkInDebug()) {
@@ -158,7 +159,7 @@ public class HttpUtil {
         }
     }
 
-    public static void httpCallback(RxAppCompatActivity activity, Observable observable,HttpCallback callback) {
+    public static void httpCallback(RxAppCompatActivity activity, Observable observable, HttpCallback callback) {
         if (NetworkUtil.isThereANet()) {
             if (activity != null && observable != null && callback != null) {
                 observable.subscribeOn(Schedulers.io())

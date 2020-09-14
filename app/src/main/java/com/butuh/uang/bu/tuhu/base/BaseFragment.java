@@ -1,10 +1,16 @@
 package com.butuh.uang.bu.tuhu.base;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.butuh.uang.bu.tuhu.dialog.LoadingDialog;
 import com.butuh.uang.bu.tuhu.dialog.PopShare;
@@ -13,6 +19,12 @@ import com.butuh.uang.bu.tuhu.http.HttpUtil;
 import com.butuh.uang.bu.tuhu.http.Interface;
 import com.butuh.uang.bu.tuhu.result.BaseResult;
 import com.butuh.uang.bu.tuhu.util.DensityUtil;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.share.Sharer;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 import com.trello.rxlifecycle2.components.support.RxFragment;
 
 import java.util.Date;
@@ -33,6 +45,7 @@ public abstract class BaseFragment extends RxFragment {
     private LoadingDialog loadingDialog;
 
     public PopShare popShare;
+    private CallbackManager mCallbackManager = CallbackManager.Factory.create();
     protected String pageName;
 
     @Override
@@ -105,10 +118,9 @@ public abstract class BaseFragment extends RxFragment {
     }
 
 
-
-    protected void showPopShare(View view){
-        if (popShare==null){
-            popShare=new PopShare(mBaseActivity);
+    protected void showPopShare(View view) {
+        if (popShare == null) {
+            popShare = new PopShare(mBaseActivity);
         }
         popShare.setListener(new PopShare.OnItemClickListener() {
             @Override
@@ -119,6 +131,30 @@ public abstract class BaseFragment extends RxFragment {
             @Override
             public void onShareFacebook() {
                 popShare.dismiss();
+                ShareLinkContent content = new ShareLinkContent.Builder()
+                        .setContentUrl(Uri.parse("https://www.baidu.com"))
+                        .build();
+                String TAG = "xj";
+                // 对话框
+                ShareDialog shareDialog = new ShareDialog(getActivity());
+                // 分享回调
+                shareDialog.registerCallback(mCallbackManager, new FacebookCallback<Sharer.Result>() {
+                    @Override
+                    public void onSuccess(Sharer.Result result) {
+                        Log.e(TAG, "onSuccess");
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Log.e(TAG, "onCancel");
+                    }
+
+                    @Override
+                    public void onError(FacebookException error) {
+                        Log.e(TAG, "onError" + error.toString());
+                    }
+                });
+                shareDialog.show(content);
             }
         });
         if (popShare.isShowing()) {
@@ -126,6 +162,12 @@ public abstract class BaseFragment extends RxFragment {
         } else {
             popShare.showAsDropDown(view, -DensityUtil.dp2px(85), -DensityUtil.dp2px(12));
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
 

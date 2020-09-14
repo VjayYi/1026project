@@ -1,116 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="110dp">
+    android:layout_height="110dp"
+    android:orientation="vertical">
+
     <View
         android:layout_width="match_parent"
         android:layout_height="8dp"
-        android:background="@color/color_green_light"/>
+        android:background="@color/color_green_light" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
         android:background="@color/white"
-        >
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
         <LinearLayout
             android:layout_width="110dp"
             android:layout_height="match_parent"
-            android:orientation="vertical"
             android:gravity="center"
-            >
+            android:orientation="vertical">
+
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/logo"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:src="@drawable/default_logo"
-                app:riv_corner_radius="5dp"
                 android:scaleType="centerCrop"
-                />
+                android:src="@drawable/default_logo"
+                app:riv_corner_radius="5dp" />
+
             <TextView
+                android:id="@+id/tv_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Kissht"
-                android:textSize="13sp"
-                android:textColor="@color/color_333333"
-                android:layout_marginTop="6dp"
-                android:id="@+id/tv_name"
-                android:maxLines="1"
-                android:ellipsize="end"
                 android:layout_marginLeft="2dp"
+                android:layout_marginTop="6dp"
                 android:layout_marginRight="2dp"
-                />
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Kissht"
+                android:textColor="@color/color_333333"
+                android:textSize="13sp" />
         </LinearLayout>
+
         <View
             android:layout_width="1dp"
             android:layout_height="55dp"
-            android:background="#A1E6D5"
-            />
+            android:background="#A1E6D5" />
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingLeft="30dp"
-            >
+            android:paddingLeft="30dp">
+
             <TextView
                 android:id="@+id/tv_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:text="Jumlah Maksimum "
                 android:textColor="@color/color_333333"
-                android:textSize="12sp"
-                android:layout_marginTop="10dp"
-                />
+                android:textSize="12sp" />
+
             <TextView
                 android:id="@+id/tv_money"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Rp 2.000.000"
-                android:textColor="#FFBF00"
-                android:textSize="14sp"
                 android:layout_alignTop="@+id/tv_text"
                 android:layout_toRightOf="@+id/tv_text"
-                />
+                android:text="Rp 2.000.000"
+                android:textColor="#FFBF00"
+                android:textSize="14sp" />
+
             <TextView
                 android:id="@+id/tv_rate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_text"
+                android:layout_marginTop="2dp"
                 android:text="Acuan Bunga 0,025%"
                 android:textColor="@color/color_333333"
-                android:textSize="12sp"
-                android:layout_marginTop="2dp"
-                android:layout_below="@+id/tv_text"
-                />
+                android:textSize="12sp" />
+
             <TextView
                 android:id="@+id/tv_period"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_rate"
                 android:text="Proses 1 hari"
                 android:textColor="@color/color_333333"
-                android:textSize="12sp"
-                android:layout_below="@+id/tv_rate"
-                />
+                android:textSize="12sp" />
+
             <ImageView
                 android:id="@+id/iv_collection"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/collect_star"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
                 android:layout_margin="9dp"
-                />
+                android:src="@drawable/collect_star" />
         </RelativeLayout>
     </LinearLayout>
+
     <TextView
+        android:id="@+id/quick_loan"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:background="#00B38A"
+        android:gravity="center"
         android:text="@string/quick_loan"
         android:textColor="@color/white"
-        android:textSize="13sp"
-        android:gravity="center"
-        android:id="@+id/quick_loan"
-        />
+        android:textSize="13sp" />
 </LinearLayout>

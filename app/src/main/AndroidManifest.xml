@@ -11,7 +11,17 @@
         android:supportsRtl="true"
         android:theme="@style/BaseTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activity.PrivacyActivity"></activity>
+        <!-- facebook begin -->
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="752991955496632" />
+        <activity android:name="com.facebook.FacebookActivity" />
+        <provider
+            android:name="com.facebook.FacebookContentProvider"
+            android:authorities="com.facebook.app.FacebookContentProvider752991955496632"
+            android:exported="true" />
+        <!-- facebook end   -->
+        <activity android:name=".activity.PrivacyActivity" />
         <activity android:name=".activity.AboutActivity" />
         <activity android:name=".activity.DownloadHistoryActivity" />
         <activity android:name=".activity.CollectionListActivity" />
@@ -27,10 +37,17 @@
             </intent-filter>
         </activity>
     </application>
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-permission android:name="android.permission.GET_TASKS" />
+
+    <!-- 读外存（根据实际具体情况申请） -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
 
 </manifest>
