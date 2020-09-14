@@ -50,7 +50,7 @@ public class PrivacyActivity extends BaseActivity implements WebLoadedCallback{
 
     @Override
     public void initViews(Bundle savedInstanceState) {
-
+        pageName="page-privacy";
     }
 
     @Override

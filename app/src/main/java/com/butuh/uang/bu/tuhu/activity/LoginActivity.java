@@ -61,7 +61,7 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     public void initViews(Bundle savedInstanceState) {
-
+        pageName="page-login";
     }
 
     @Override

@@ -56,7 +56,7 @@ public class MineFragment extends BaseFragment {
 
     @Override
     public void initViews(View view) {
-
+        pageName="page-mine";
     }
 
     @Override

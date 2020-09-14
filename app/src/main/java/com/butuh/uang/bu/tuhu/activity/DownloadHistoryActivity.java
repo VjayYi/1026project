@@ -15,6 +15,7 @@ import com.butuh.uang.bu.tuhu.http.HttpCallback;
 import com.butuh.uang.bu.tuhu.http.HttpUtil;
 import com.butuh.uang.bu.tuhu.http.Interface;
 import com.butuh.uang.bu.tuhu.result.BaseResult;
+import com.butuh.uang.bu.tuhu.util.GoogleDownloadEvent;
 import com.butuh.uang.bu.tuhu.util.SharedPreferencesUtil;
 import com.butuh.uang.bu.tuhu.util.ToastUtil;
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -59,6 +60,7 @@ public class DownloadHistoryActivity extends BaseActivity {
 
     @Override
     public void initViews(Bundle savedInstanceState) {
+        pageName="page-download-list";
         adapter=new DownloadListAdapter();
         rvData.setLayoutManager(new LinearLayoutManager(mBaseActivity));
         rvData.setAdapter(adapter);
@@ -71,7 +73,8 @@ public class DownloadHistoryActivity extends BaseActivity {
             public void onItemChildClick(BaseQuickAdapter a, View view, int position) {
                 switch (view.getId()) {
                     case R.id.tv_open:
-
+                        ProductBean bean=adapter.getItem(position);
+                        new GoogleDownloadEvent().openOrDownload(mBaseActivity,bean);
                         break;
                 }
             }
@@ -150,4 +153,5 @@ public class DownloadHistoryActivity extends BaseActivity {
             }
         });
     }
+
 }

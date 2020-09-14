@@ -48,6 +48,7 @@ public class FAQActivity extends BaseActivity {
 
     @Override
     public void initViews(Bundle savedInstanceState) {
+        pageName="page-faq";
         rvData.setLayoutManager(new LinearLayoutManager(mBaseActivity));
         adapter=new FAQAdapter();
         rvData.setAdapter(adapter);

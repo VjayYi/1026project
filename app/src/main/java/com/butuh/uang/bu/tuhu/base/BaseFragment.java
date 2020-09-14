@@ -1,18 +1,29 @@
 package com.butuh.uang.bu.tuhu.base;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.butuh.uang.bu.tuhu.dialog.LoadingDialog;
 import com.butuh.uang.bu.tuhu.dialog.PopShare;
+import com.butuh.uang.bu.tuhu.http.HttpCallback;
+import com.butuh.uang.bu.tuhu.http.HttpUtil;
+import com.butuh.uang.bu.tuhu.http.Interface;
+import com.butuh.uang.bu.tuhu.result.BaseResult;
 import com.butuh.uang.bu.tuhu.util.DensityUtil;
 import com.trello.rxlifecycle2.components.support.RxFragment;
+
+import java.util.Date;
 
 import androidx.annotation.NonNull;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.Observable;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 // 常规的BaseFragment
 public abstract class BaseFragment extends RxFragment {
@@ -22,6 +33,7 @@ public abstract class BaseFragment extends RxFragment {
     private LoadingDialog loadingDialog;
 
     public PopShare popShare;
+    protected String pageName;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -36,6 +48,7 @@ public abstract class BaseFragment extends RxFragment {
         mBaseActivity = (BaseActivity) getActivity();
         getIntentData();
         initViews(view);
+        pageOpenEvent();
         addListeners();
         requestOnViewCreated();
     }
@@ -115,4 +128,24 @@ public abstract class BaseFragment extends RxFragment {
         }
     }
 
+
+    //play-a-role-in
+    private void pageOpenEvent(){
+        if (TextUtils.isEmpty(pageName)){
+            return;
+        }
+        String param="[[\"play-a-role-in\",\"[\\\""+ pageName +"\\\"]\","+new Date().getTime() +",\"0\"]]";
+        RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), param);
+        Observable<BaseResult> observable= HttpUtil.createService(Interface.class).happenlog(body);
+        HttpUtil.httpCallback(mBaseActivity, observable, new HttpCallback() {
+            @Override
+            public void success(Object result, String message) {
+
+            }
+
+            @Override
+            public void failure(String code, Throwable throwable) {
+            }
+        });
+    }
 }

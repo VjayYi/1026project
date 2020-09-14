@@ -47,6 +47,7 @@ public class AboutActivity extends BaseActivity {
 
     @Override
     public void initViews(Bundle savedInstanceState) {
+        pageName="page-about";
         tvVersion.setText(AppInfoUtil.getVersionName());
     }
 

@@ -1,6 +1,9 @@
 package com.butuh.uang.bu.tuhu.fragment;
 
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,8 +24,11 @@ import com.butuh.uang.bu.tuhu.http.HttpCallback;
 import com.butuh.uang.bu.tuhu.http.HttpUtil;
 import com.butuh.uang.bu.tuhu.http.Interface;
 import com.butuh.uang.bu.tuhu.result.BaseResult;
+import com.butuh.uang.bu.tuhu.util.AppInfoUtil;
 import com.butuh.uang.bu.tuhu.util.DensityUtil;
 import com.butuh.uang.bu.tuhu.util.FormatUtil;
+import com.butuh.uang.bu.tuhu.util.GoogleDownloadEvent;
+import com.butuh.uang.bu.tuhu.util.RecyclerviewUtil;
 import com.butuh.uang.bu.tuhu.util.SharedPreferencesUtil;
 import com.butuh.uang.bu.tuhu.util.ToastUtil;
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -38,6 +44,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -91,6 +98,7 @@ public class HomeFragment extends BaseFragment {
 
     @Override
     public void initViews(View view) {
+        pageName="page-home";
         EventBus.getDefault().register(this);
         initRefreshLayout();
         noNetView=View.inflate(mBaseActivity,R.layout.layout_no_net,null);
@@ -140,18 +148,17 @@ public class HomeFragment extends BaseFragment {
         adapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
             @Override
             public void onItemChildClick(BaseQuickAdapter a, View view, int position) {
+                ProductBean bean=adapter.getItem(position);
                 switch (view.getId()) {
                     case R.id.iv_collection:
                         if (ProjectApplication.getInstance().isUserLogin()){
-                            ProductBean bean=adapter.getItem(position);
                             collection(bean,position,bean.getFavorited());
                         }else{
                             startActivity(new Intent(mBaseActivity, LoginActivity.class));
                         }
                         break;
                     case R.id.quick_loan:
-                        //打开应用
-                        //否则下载
+                        new GoogleDownloadEvent().openOrDownload(mBaseActivity,bean);
                         break;
                 }
             }
@@ -260,7 +267,9 @@ public class HomeFragment extends BaseFragment {
         }
     }
 
-
+    /**
+     * 加载数据
+     */
     private void loadData(){
         if (isFirstLoad)
             showLoadingDialog(true);
@@ -299,6 +308,15 @@ public class HomeFragment extends BaseFragment {
                     adapter.setNewData(result.getKuantitas());
                 else
                     adapter.addData(result.getKuantitas());
+
+                if (page==1&&!isUploadEvent){
+                }
+                rvData.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        homeLoadCompleted();
+                    }
+                });
             }
 
             @Override
@@ -322,8 +340,19 @@ public class HomeFragment extends BaseFragment {
         });
     }
 
+    /**
+     * 点击事件上传
+     * @param position
+     */
     private void uploadClickEvent(int position){
-        String param="[[\"reconstruct\",\"[\\\""+ UUID.randomUUID().toString() +"\\\", \\\"reconstruct\\\", \\\"product_list\\\", \\\""+position+"\\\"]\","+new Date().getTime() +",\""+adapter.getItem(position).getSerialNumber()+"\"]]";
+        ProductBean bean=adapter.getItem(position);
+        String uuid=UUID.randomUUID().toString();
+        long clickTime=new Date().getTime();
+        if (bean.isInstalled()){
+            //应用已安装 上传应用被安装事件
+            uploadInstalledEvent(bean,uuid,clickTime);
+        }
+        String param="[[\"reconstruct\",\"[\\\""+ uuid +"\\\", \\\"reconstruct\\\", \\\"product_list\\\", \\\""+position+"\\\"]\","+clickTime +",\""+bean.getSerialNumber()+"\"]]";
         RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), param);
         Observable<BaseResult> observable= HttpUtil.createService(Interface.class).happenlog(body);
         HttpUtil.httpCallback(mBaseActivity, observable, new HttpCallback() {
@@ -334,7 +363,80 @@ public class HomeFragment extends BaseFragment {
 
             @Override
             public void failure(String code, Throwable throwable) {
-                ToastUtil.showShortToast(throwable.getMessage());
+            }
+        });
+    }
+
+    /**
+     * 应用被安装事件
+     * @param bean
+     * @param uuid
+     * @param clickTime
+     */
+    private void uploadInstalledEvent(ProductBean bean,String uuid,long clickTime){
+        HashMap<String,Object> map=getPkgInfos(bean.getPacket());
+        //["转化点击UUID", 点击时间(int), "App名称", "包名", "版本名称", 版本号代码(int), 是否是系统应用(0不是，1是)(int), 安装时间(int), 最后更新时间(int), flags(int)]
+        String param=
+                "[[\"swear-in\"," +
+                        "\"[\""+uuid+"\", "+clickTime+", \""+bean.getDesignation()+"\", \""+bean.getPacket()+"\", " +
+                        "\""+map.get("vName")+"\", "+map.get("vCode")+", "+map.get("system")+", "+map.get("fTime")+", "+map.get("upTime")+","+map.get("flags")+"]\"," +
+                        ""+new Date().getTime() +",\""+bean.getSerialNumber()+"\"]" +
+                        "]";
+        RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), param);
+        Observable<BaseResult> observable= HttpUtil.createService(Interface.class).happenlog(body);
+        HttpUtil.httpCallback(mBaseActivity, observable, new HttpCallback() {
+            @Override
+            public void success(Object result, String message) {
+
+            }
+
+            @Override
+            public void failure(String code, Throwable throwable) {
+            }
+        });
+    }
+
+    /**
+     * 获取应用信息
+     * @param pkg
+     * @return
+     */
+    private HashMap<String, Object> getPkgInfos(String pkg){
+        HashMap<String, Object> map=new HashMap<>();
+        PackageManager pckMan = mBaseActivity.getPackageManager();
+        ArrayList<HashMap<String, Object>> items = new ArrayList<HashMap<String, Object>>();
+        List<PackageInfo> packageInfo = pckMan.getInstalledPackages(0);
+        for (PackageInfo pInfo : packageInfo) {
+            if (pInfo!=null&&pInfo.packageName.equals(pkg)){
+                map.put("vName",pInfo.versionName);
+                map.put("vCode",pInfo.versionCode);
+                map.put("flags",pInfo.applicationInfo.flags);
+                map.put("system",pInfo.applicationInfo.flags== ApplicationInfo.FLAG_SYSTEM?1:0);
+                map.put("fTime",pInfo.firstInstallTime);
+                map.put("upTime",pInfo.lastUpdateTime);
+            }
+        }
+        return map;
+    }
+
+    private boolean isUploadEvent=false;
+
+    /**
+     * 首页加载完成事件
+     */
+    private void homeLoadCompleted(){
+        //["列表区域高度"、"接口返回产品的总数量"、"列表实际显示产品总数量"]
+        String param="[[\"finish-line\",\"[\\\""+rvData.getHeight()+"\\\",\\\""+adapter.getItemCount()+"\\\",\\\""+RecyclerviewUtil.getVisibleItemCount(rvData)+"\\\"]\","+new Date().getTime()+",0]]";
+        RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), param);
+        Observable<BaseResult> observable= HttpUtil.createService(Interface.class).happenlog(body);
+        HttpUtil.httpCallback(ProjectApplication.getInstance(), observable, new HttpCallback() {
+            @Override
+            public void success(Object result, String message) {
+                isUploadEvent=true;
+            }
+
+            @Override
+            public void failure(String code, Throwable throwable) {
             }
         });
     }

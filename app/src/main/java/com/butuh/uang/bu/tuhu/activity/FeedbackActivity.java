@@ -53,6 +53,7 @@ public class FeedbackActivity extends BaseActivity {
 
     @Override
     public void initViews(Bundle savedInstanceState) {
+        pageName="page-feedback";
         ratingBar.setStar(0);
     }
 

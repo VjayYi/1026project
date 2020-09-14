@@ -4,7 +4,12 @@ import android.app.Application;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.butuh.uang.bu.tuhu.http.HttpCallback;
+import com.butuh.uang.bu.tuhu.http.HttpUtil;
+import com.butuh.uang.bu.tuhu.http.Interface;
+import com.butuh.uang.bu.tuhu.result.BaseResult;
 import com.butuh.uang.bu.tuhu.util.SharedPreferencesUtil;
+import com.butuh.uang.bu.tuhu.util.ToastUtil;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.DefaultRefreshFooterCreator;
 import com.scwang.smartrefresh.layout.api.DefaultRefreshHeaderCreator;
@@ -12,9 +17,14 @@ import com.scwang.smartrefresh.layout.api.RefreshFooter;
 import com.scwang.smartrefresh.layout.api.RefreshHeader;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 
+import java.util.Date;
 import java.util.UUID;
 
 import androidx.annotation.NonNull;
+import io.reactivex.Observable;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 public class ProjectApplication extends Application {
 
@@ -53,6 +63,7 @@ public class ProjectApplication extends Application {
         sessionid= UUID.randomUUID().toString();
         instance = this;
 
+        appStartEvent();
     }
 
     @Override
@@ -75,5 +86,22 @@ public class ProjectApplication extends Application {
 
     public String getPhone(){
         return SharedPreferencesUtil.getStringData("phone");
+    }
+
+    private void appStartEvent(){
+        String param="[[\"commence\",\"[]\","+new Date().getTime() +",\"0\"]]";
+        RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), param);
+        Observable<BaseResult> observable= HttpUtil.createService(Interface.class).happenlog(body);
+        HttpUtil.httpCallback(ProjectApplication.getInstance(), observable, new HttpCallback() {
+            @Override
+            public void success(Object result, String message) {
+
+            }
+
+            @Override
+            public void failure(String code, Throwable throwable) {
+                ToastUtil.showShortToast(throwable.getMessage());
+            }
+        });
     }
 }

@@ -61,6 +61,7 @@ public class CollectionListActivity extends BaseActivity {
 
     @Override
     public void initViews(Bundle savedInstanceState) {
+        pageName="page-collection-list";
         rvData.setLayoutManager(new LinearLayoutManager(mBaseActivity));
         adapter=new CollectionListAdapter();
         rvData.setAdapter(adapter);

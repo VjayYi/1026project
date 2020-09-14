@@ -1,6 +1,7 @@
 package com.butuh.uang.bu.tuhu.http;
 
 import android.app.Dialog;
+import android.content.Context;
 
 import com.butuh.uang.bu.tuhu.R;
 import com.butuh.uang.bu.tuhu.app.ProjectApplication;
@@ -193,6 +194,47 @@ public class HttpUtil {
                                 if (!activity.isDestroyed() && !activity.isFinishing()) {
                                     callback.failure("99", e);
                                 }
+                            }
+
+                            @Override
+                            public void onComplete() {
+                            }
+                        });
+            }
+        } else {
+            if (callback != null) {
+                callback.failure("99", new Throwable(ProjectApplication.getInstance().getApplicationContext().getResources().getString(R.string.no_network)));
+            }
+        }
+    }
+
+    public static void httpCallback(Context context, Observable observable, HttpCallback callback) {
+        if (NetworkUtil.isThereANet()) {
+            if (context != null && observable != null && callback != null) {
+                observable.subscribeOn(Schedulers.io())
+                        .unsubscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<BaseResult>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                            }
+
+                            @Override
+                            public void onNext(BaseResult baseResult) {
+                                if (baseResult != null) {
+                                    if (baseResult.getStatus().equals("0")) {
+                                        callback.success(baseResult.getData(), baseResult.getMessage());
+                                    } else {
+                                        callback.failure(baseResult.getStatus(), new Throwable(baseResult.getMessage() == null ? "" : baseResult.getMessage()));
+                                    }
+                                } else {
+                                    callback.success(null, null);
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                callback.failure("99", e);
                             }
 
                             @Override

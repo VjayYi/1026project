@@ -67,6 +67,15 @@ public class ProductBean {
     private List<AdditionalBean> additional;
     private List<LimitsBean> limits;
     private long historyTime;
+    private boolean isInstalled;
+
+    public boolean isInstalled() {
+        return isInstalled;
+    }
+
+    public void setInstalled(boolean installed) {
+        isInstalled = installed;
+    }
 
     public long getHistoryTime() {
         return historyTime;

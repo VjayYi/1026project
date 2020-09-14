@@ -19,9 +19,11 @@ import com.butuh.uang.bu.tuhu.http.HttpCallback;
 import com.butuh.uang.bu.tuhu.http.HttpUtil;
 import com.butuh.uang.bu.tuhu.http.Interface;
 import com.butuh.uang.bu.tuhu.result.BaseResult;
+import com.butuh.uang.bu.tuhu.util.AppInfoUtil;
 import com.butuh.uang.bu.tuhu.util.DensityUtil;
 import com.butuh.uang.bu.tuhu.util.FormatUtil;
 import com.butuh.uang.bu.tuhu.util.GlideUtil;
+import com.butuh.uang.bu.tuhu.util.GoogleDownloadEvent;
 import com.butuh.uang.bu.tuhu.util.NumberUtil;
 import com.butuh.uang.bu.tuhu.util.ToastUtil;
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -90,6 +92,8 @@ public class ProductDetailActivity extends BaseActivity {
 
     @Override
     public void initViews(Bundle savedInstanceState) {
+        pageName="page-product-detail";
+        pId=dataID;
         for (String t:titles) {
             //为TabLayout添加10个tab并设置上文本
             tabLayout.addTab(tabLayout.newTab().setText(t));
@@ -114,8 +118,10 @@ public class ProductDetailActivity extends BaseActivity {
                 showPopSelection2(view);
                 break;
             case R.id.tv_download:
+                if (mData==null)
+                    return;
                 isDownloadClick=true;
-                //todo...
+                new GoogleDownloadEvent().openOrDownload(mBaseActivity,mData);
                 break;
         }
     }

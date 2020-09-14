@@ -4,6 +4,7 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -13,10 +14,18 @@ import com.butuh.uang.bu.tuhu.R;
 import com.butuh.uang.bu.tuhu.app.ProjectActivityManager;
 import com.butuh.uang.bu.tuhu.dialog.LoadingDialog;
 import com.butuh.uang.bu.tuhu.dialog.PopShare;
+import com.butuh.uang.bu.tuhu.http.HttpCallback;
+import com.butuh.uang.bu.tuhu.http.HttpUtil;
+import com.butuh.uang.bu.tuhu.http.Interface;
+import com.butuh.uang.bu.tuhu.result.BaseResult;
 import com.butuh.uang.bu.tuhu.util.DensityUtil;
+import com.butuh.uang.bu.tuhu.util.ToastUtil;
 import com.butuh.uang.bu.tuhu.view.MyToast;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
+
+import java.util.Date;
+import java.util.UUID;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -24,6 +33,10 @@ import androidx.appcompat.widget.Toolbar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.Observable;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 // 常规的BaseActivity
 public abstract class BaseActivity extends RxAppCompatActivity {
@@ -40,6 +53,8 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     private LoadingDialog loadingDialog;
     private Unbinder unbinder;
     public PopShare popShare;
+    protected String pageName;
+    protected String pId="0";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +76,8 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         getIntentData();
 
         initViews(savedInstanceState);
+
+        pageOpenEvent();
 
         addListeners();
         requestOnCreate();
@@ -235,4 +252,23 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         }
     }
 
+    //play-a-role-in
+    private void pageOpenEvent(){
+        if (TextUtils.isEmpty(pageName)){
+            return;
+        }
+        String param="[[\"play-a-role-in\",\"[\\\""+ pageName +"\\\"]\","+new Date().getTime() +",\""+pId+"\"]]";
+        RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), param);
+        Observable<BaseResult> observable= HttpUtil.createService(Interface.class).happenlog(body);
+        HttpUtil.httpCallback(mBaseActivity, observable, new HttpCallback() {
+            @Override
+            public void success(Object result, String message) {
+
+            }
+
+            @Override
+            public void failure(String code, Throwable throwable) {
+            }
+        });
+    }
 }
