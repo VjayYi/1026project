@@ -9,23 +9,25 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.butuh.uang.bu.tuhu.R;
 import com.butuh.uang.bu.tuhu.activity.LoginActivity;
-import com.butuh.uang.bu.tuhu.activity.MainActivity;
 import com.butuh.uang.bu.tuhu.activity.ProductDetailActivity;
 import com.butuh.uang.bu.tuhu.adapter.ProductListAdapter;
 import com.butuh.uang.bu.tuhu.app.ProjectApplication;
 import com.butuh.uang.bu.tuhu.base.BaseFragment;
 import com.butuh.uang.bu.tuhu.bean.PageTableBean;
 import com.butuh.uang.bu.tuhu.bean.ProductBean;
-import com.butuh.uang.bu.tuhu.dialog.PopShare;
 import com.butuh.uang.bu.tuhu.event.CancelCollectionEvent;
 import com.butuh.uang.bu.tuhu.http.HttpCallback;
 import com.butuh.uang.bu.tuhu.http.HttpUtil;
 import com.butuh.uang.bu.tuhu.http.Interface;
 import com.butuh.uang.bu.tuhu.result.BaseResult;
 import com.butuh.uang.bu.tuhu.util.AppInfoUtil;
-import com.butuh.uang.bu.tuhu.util.DensityUtil;
 import com.butuh.uang.bu.tuhu.util.FormatUtil;
 import com.butuh.uang.bu.tuhu.util.GoogleDownloadEvent;
 import com.butuh.uang.bu.tuhu.util.RecyclerviewUtil;
@@ -36,7 +38,6 @@ import com.google.gson.Gson;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
-import com.scwang.smartrefresh.layout.listener.OnRefreshLoadMoreListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -48,12 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.Observable;
 import okhttp3.FormBody;
@@ -81,10 +77,11 @@ public class HomeFragment extends BaseFragment {
     TextView tvLimit;
 
     private ProductListAdapter adapter;
-    private int page=1;
     private View footer;
     private View noNetView;
     private boolean isFirstLoad=true;
+    private int page = 1;
+
 
     @Override
     protected int layoutResource() {
@@ -111,10 +108,10 @@ public class HomeFragment extends BaseFragment {
         adapter.setEnableLoadMore(false);
         rvData.setAdapter(adapter);
 
-        String testAmount=SharedPreferencesUtil.getStringData("testAmount");
-        if (!TextUtils.isEmpty(testAmount)){
+        String testAmount = SharedPreferencesUtil.getStringData("testAmount");
+        if (!TextUtils.isEmpty(testAmount)) {
             setTestAmount(testAmount);
-        }else{
+        } else {
             showMoney(false);
         }
 
@@ -137,10 +134,10 @@ public class HomeFragment extends BaseFragment {
         testButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ProjectApplication.getInstance().isUserLogin()){
+                if (ProjectApplication.getInstance().isUserLogin()) {
                     //测试
                     createTestAmount();
-                }else{
+                } else {
                     startActivity(new Intent(mBaseActivity, LoginActivity.class));
                 }
             }
@@ -151,14 +148,21 @@ public class HomeFragment extends BaseFragment {
                 ProductBean bean=adapter.getItem(position);
                 switch (view.getId()) {
                     case R.id.iv_collection:
-                        if (ProjectApplication.getInstance().isUserLogin()){
-                            collection(bean,position,bean.getFavorited());
-                        }else{
+                        if (ProjectApplication.getInstance().isUserLogin()) {
+                            collection(bean, position, bean.getFavorited());
+                        } else{
                             startActivity(new Intent(mBaseActivity, LoginActivity.class));
                         }
                         break;
                     case R.id.quick_loan:
                         new GoogleDownloadEvent().openOrDownload(mBaseActivity,bean);
+                        //打开应用
+                        //否则下载
+                        ProductBean item = adapter.getItem(position);
+                        if (item == null || getActivity() == null) {
+                            return;
+                        }
+                        AppInfoUtil.openOrInstallApp(getActivity(), item.getPacket());
                         break;
                 }
             }
@@ -169,7 +173,7 @@ public class HomeFragment extends BaseFragment {
             public void onItemClick(BaseQuickAdapter a, View view, int position) {
                 //SharedPreferencesUtil.saveHistory(adapter.getItem(position));
                 uploadClickEvent(position);
-                startActivity(new Intent(mBaseActivity, ProductDetailActivity.class).putExtra("DataID",adapter.getItem(position).getSerialNumber()));
+                startActivity(new Intent(mBaseActivity, ProductDetailActivity.class).putExtra("DataID", adapter.getItem(position).getSerialNumber()));
             }
         });
 
@@ -177,7 +181,7 @@ public class HomeFragment extends BaseFragment {
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
                 isFirstLoad=false;
-                page=1;
+                page = 1;
                 loadData();
             }
         });
@@ -228,44 +232,45 @@ public class HomeFragment extends BaseFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void updateCollectionEvent(CancelCollectionEvent event) {
-        if (event==null||TextUtils.isEmpty(event.getSerialNumber()))
+        if (event == null || TextUtils.isEmpty(event.getSerialNumber()))
             return;
-        if(adapter==null)
+        if (adapter == null)
             return;
-        for(int i=0;i<adapter.getData().size();i++){
-            ProductBean p=adapter.getItem(i);
-            if (p.getSerialNumber().equals(event.getSerialNumber())){
+        for (int i = 0; i < adapter.getData().size(); i++) {
+            ProductBean p = adapter.getItem(i);
+            if (p.getSerialNumber().equals(event.getSerialNumber())) {
                 p.setFavorited(0);
                 adapter.notifyItemChanged(i);
             }
         }
     }
 
-    public void setTestAmount(String data){
+    public void setTestAmount(String data) {
         showMoney(true);
         tvMoney.setText(data);
     }
 
-    public void createTestAmount(){
-        int code=(int)(Math.random()*1000000+1000000);
-        String money= FormatUtil.formatMoney(code);
-        SharedPreferencesUtil.saveData("testAmount",money);
+    public void createTestAmount() {
+        int code = (int) (Math.random() * 1000000 + 1000000);
+        String money = FormatUtil.formatMoney(code);
+        SharedPreferencesUtil.saveData("testAmount", money);
         setTestAmount(money);
     }
 
-    public void showMoney(boolean b){
-        if (b){
+    public void showMoney(boolean b) {
+        if (b) {
             testButton.setVisibility(View.GONE);
             testText.setVisibility(View.GONE);
             tvMoney.setVisibility(View.VISIBLE);
             tvLimit.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             testButton.setVisibility(View.VISIBLE);
             testText.setVisibility(View.VISIBLE);
             tvMoney.setVisibility(View.GONE);
             tvLimit.setVisibility(View.GONE);
         }
     }
+
 
     /**
      * 加载数据
@@ -276,14 +281,14 @@ public class HomeFragment extends BaseFragment {
         List<List<String>> list=new ArrayList<>();
         List<String> data=new ArrayList<>();
         data.add("396");
-        data.add(page+"");
+        data.add(page + "");
         list.add(data);
-        List<String> data1=new ArrayList<>();
+        List<String> data1 = new ArrayList<>();
         data1.add("397");
-        data1.add(10+"");
+        data1.add(10 + "");
         list.add(data1);
         RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), new Gson().toJson(list));
-        Observable<BaseResult<PageTableBean<ProductBean>>> observable= HttpUtil.createService(Interface.class).getProductList(body);
+        Observable<BaseResult<PageTableBean<ProductBean>>> observable = HttpUtil.createService(Interface.class).getProductList(body);
         HttpUtil.httpCallback(mBaseActivity, observable, new HttpCallback<PageTableBean<ProductBean>>() {
             @Override
             public void success(PageTableBean<ProductBean> result, String message) {
@@ -354,7 +359,7 @@ public class HomeFragment extends BaseFragment {
         }
         String param="[[\"reconstruct\",\"[\\\""+ uuid +"\\\", \\\"reconstruct\\\", \\\"product_list\\\", \\\""+position+"\\\"]\","+clickTime +",\""+bean.getSerialNumber()+"\"]]";
         RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), param);
-        Observable<BaseResult> observable= HttpUtil.createService(Interface.class).happenlog(body);
+        Observable<BaseResult> observable = HttpUtil.createService(Interface.class).happenlog(body);
         HttpUtil.httpCallback(mBaseActivity, observable, new HttpCallback() {
             @Override
             public void success(Object result, String message) {
@@ -441,13 +446,13 @@ public class HomeFragment extends BaseFragment {
         });
     }
 
-    private void collection(ProductBean bean,int position, int type){
-        List<List<String>> list=new ArrayList<>();
-        List<String> data=new ArrayList<>();
-        if (type==0){
+    private void collection(ProductBean bean, int position, int type) {
+        List<List<String>> list = new ArrayList<>();
+        List<String> data = new ArrayList<>();
+        if (type == 0) {
             //收藏  398
             data.add("398");
-        }else{
+        } else {
             //取消收藏   399
             data.add("399");
         }
@@ -455,13 +460,13 @@ public class HomeFragment extends BaseFragment {
         list.add(data);
         showLoadingDialog(true);
         RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), new Gson().toJson(list));
-        Observable<BaseResult> observable= HttpUtil.createService(Interface.class).collection(body);
+        Observable<BaseResult> observable = HttpUtil.createService(Interface.class).collection(body);
         HttpUtil.httpCallback(mBaseActivity, observable, new HttpCallback() {
             @Override
             public void success(Object result, String message) {
                 showLoadingDialog(false);
-                bean.setFavorited(type==0?1:0);
-                adapter.notifyItemChanged(position+adapter.getHeaderLayoutCount());
+                bean.setFavorited(type == 0 ? 1 : 0);
+                adapter.notifyItemChanged(position + adapter.getHeaderLayoutCount());
             }
 
             @Override
@@ -471,4 +476,6 @@ public class HomeFragment extends BaseFragment {
             }
         });
     }
+
+
 }
