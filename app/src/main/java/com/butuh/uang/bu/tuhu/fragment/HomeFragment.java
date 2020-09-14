@@ -29,6 +29,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.gson.Gson;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshLoadMoreListener;
 
 import org.greenrobot.eventbus.EventBus;
@@ -74,6 +75,9 @@ public class HomeFragment extends BaseFragment {
 
     private ProductListAdapter adapter;
     private int page=1;
+    private View footer;
+    private View noNetView;
+    private boolean isFirstLoad=true;
 
     @Override
     protected int layoutResource() {
@@ -89,10 +93,14 @@ public class HomeFragment extends BaseFragment {
     public void initViews(View view) {
         EventBus.getDefault().register(this);
         initRefreshLayout();
+        noNetView=View.inflate(mBaseActivity,R.layout.layout_no_net,null);
+        footer=View.inflate(mBaseActivity,R.layout.footer_home,null);
         rvData.setLayoutManager(new LinearLayoutManager(mBaseActivity));
 
         adapter = new ProductListAdapter();
         adapter.setHeaderAndEmpty(true);
+        adapter.setFooterView(footer);
+        adapter.setEnableLoadMore(false);
         rvData.setAdapter(adapter);
 
         String testAmount=SharedPreferencesUtil.getStringData("testAmount");
@@ -102,11 +110,22 @@ public class HomeFragment extends BaseFragment {
             showMoney(false);
         }
 
-        loadData();
     }
 
     @Override
     public void addListeners() {
+        noNetView.findViewById(R.id.tv_refresh).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadData();
+            }
+        });
+        footer.findViewById(R.id.iv_top).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rvData.scrollToPosition(0);
+            }
+        });
         testButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,16 +166,19 @@ public class HomeFragment extends BaseFragment {
             }
         });
 
-        mRefreshLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListener() {
-            @Override
-            public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
-                page++;
-                loadData();
-            }
-
+        mRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+                isFirstLoad=false;
                 page=1;
+                loadData();
+            }
+        });
+        adapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
+            @Override
+            public void onLoadMoreRequested() {
+                isFirstLoad=false;
+                page++;
                 loadData();
             }
         });
@@ -165,7 +187,7 @@ public class HomeFragment extends BaseFragment {
 
     @Override
     public void requestOnViewCreated() {
-
+        loadData();
     }
 
     @Override
@@ -240,6 +262,8 @@ public class HomeFragment extends BaseFragment {
 
 
     private void loadData(){
+        if (isFirstLoad)
+            showLoadingDialog(true);
         List<List<String>> list=new ArrayList<>();
         List<String> data=new ArrayList<>();
         data.add("396");
@@ -254,16 +278,23 @@ public class HomeFragment extends BaseFragment {
         HttpUtil.httpCallback(mBaseActivity, observable, new HttpCallback<PageTableBean<ProductBean>>() {
             @Override
             public void success(PageTableBean<ProductBean> result, String message) {
-                if(mRefreshLayout==null)
-                    return;
-                if(page==1)
-                    mRefreshLayout.finishRefresh();
-                else
-                    mRefreshLayout.finishLoadMore();
-                mRefreshLayout.setEnableLoadMore(result.haveMore());
-                if (adapter.getEmptyViewCount()==0){
-                    adapter.setEmptyView(View.inflate(mBaseActivity,R.layout.empty_no_product,null));
+                if (isFirstLoad)
+                    showLoadingDialog(false);
+                else{
+                    if(mRefreshLayout==null)
+                        return;
+                    if(page==1)
+                        mRefreshLayout.finishRefresh();
+                    else
+                        adapter.loadMoreComplete();
                 }
+                if (adapter==null)
+                    return;
+                adapter.setEnableLoadMore(result.haveMore());
+                footer.setVisibility(result.haveMore()?View.GONE:View.VISIBLE);
+                /*if (adapter.getEmptyViewCount()==0){
+                }*/
+                adapter.setEmptyView(View.inflate(mBaseActivity,R.layout.empty_no_product,null));
                 if (page==1)
                     adapter.setNewData(result.getKuantitas());
                 else
@@ -272,11 +303,21 @@ public class HomeFragment extends BaseFragment {
 
             @Override
             public void failure(String code, Throwable throwable) {
-                if(page==1)
-                    mRefreshLayout.finishRefresh();
-                else
-                    mRefreshLayout.finishLoadMore();
-                ToastUtil.showShortToast(throwable.getMessage());
+                if (isFirstLoad)
+                    showLoadingDialog(false);
+                else{
+                    if(mRefreshLayout==null)
+                        return;
+                    if(page==1)
+                        mRefreshLayout.finishRefresh();
+                    else
+                        adapter.loadMoreComplete();
+                }
+                if (code.equals("99")){
+                    adapter.setEmptyView(noNetView);
+                }else{
+                    ToastUtil.showShortToast(throwable.getMessage());
+                }
             }
         });
     }

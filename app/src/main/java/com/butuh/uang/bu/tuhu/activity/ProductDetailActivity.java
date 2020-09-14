@@ -190,12 +190,13 @@ public class ProductDetailActivity extends BaseActivity {
     private void showPopSelection1(View view){
         if (popSelection1==null){
             popSelection1=new PopSelection(mBaseActivity);
+            popSelection1.setNeedFormat(true);
         }
         popSelection1.setListener(new PopSelection.OnItemClickListener() {
             @Override
             public void onItemClick(String data) {
                 popSelection1.dismiss();
-                tvSelection1.setText(data);
+                tvSelection1.setText(FormatUtil.formatMoneyNoUnit(data));
                 counterResult();
             }
         });
@@ -257,7 +258,7 @@ public class ProductDetailActivity extends BaseActivity {
      * 还款总额：贷款金额+利息+服务费
      */
     private void counterResult(){
-        int amount=NumberUtil.pasrInt(tvSelection1.getText().toString());
+        int amount=NumberUtil.pasrInt(tvSelection1.getText().toString().replace(".","").replace(",","."));
         int cycle=NumberUtil.pasrInt(tvSelection2.getText().toString());
         float lixi=NumberUtil.pasrFloat(mData.getShowLoanCycle())*amount*cycle;
         float serviceFee=amount*NumberUtil.pasrFloat(mData.getRevealCoverCharge());
@@ -274,7 +275,7 @@ public class ProductDetailActivity extends BaseActivity {
         GlideUtil.loadImage(mBaseActivity,mData.getCharacteristic(),logo);
         tvName.setText(mData.getDesignation());
         tvDescription.setText(mData.getTagline());
-        tvSelection1.setText(mData.getDisplayTheDefaultValue());
+        tvSelection1.setText(FormatUtil.formatMoneyNoUnit(mData.getDisplayTheDefaultValue()));
         tvSelection2.setText(mData.getShowTheDefaultCycle());
 
         counterResult();

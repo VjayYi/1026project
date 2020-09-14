@@ -69,10 +69,12 @@ public class MineFragment extends BaseFragment {
         super.onResume();
         if (ProjectApplication.getInstance().isUserLogin()){
             ivHead.setImageResource(R.mipmap.my_touxiang_yes);
-            tvToLogin.setText(ProjectApplication.getInstance().getPhone());
+            tvName.setText(ProjectApplication.getInstance().getPhone());
+            tvToLogin.setVisibility(View.GONE);
         }else{
             ivHead.setImageResource(R.mipmap.my_touxiang_no);
-            tvToLogin.setText("klik disini untuk login");
+            tvName.setText("Anda Belum Login");
+            tvToLogin.setVisibility(View.VISIBLE);
         }
     }
 

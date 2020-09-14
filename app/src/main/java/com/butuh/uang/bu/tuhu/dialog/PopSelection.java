@@ -23,6 +23,15 @@ public class PopSelection extends PopupWindow {
     private OnItemClickListener listener;
     private RecyclerView rvData;
     private NumberAdapter adapter;
+    private boolean needFormat=false;
+
+    public boolean isNeedFormat() {
+        return needFormat;
+    }
+
+    public void setNeedFormat(boolean needFormat) {
+        this.needFormat = needFormat;
+    }
 
     public void setListener(OnItemClickListener listener) {
         this.listener = listener;
@@ -59,6 +68,7 @@ public class PopSelection extends PopupWindow {
             return;
         if (adapter==null)
             return;
+        adapter.setNeedFormat(needFormat);
         adapter.setNewData(data);
     }
 

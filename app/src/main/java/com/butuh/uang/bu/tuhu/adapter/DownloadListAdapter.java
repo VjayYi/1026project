@@ -28,6 +28,6 @@ public class DownloadListAdapter extends BaseQuickAdapter<ProductBean,BaseViewHo
                 .setText(R.id.tv_name,item.getDesignation())
                 .setText(R.id.tv_money, FormatUtil.formatMoney(item.getDisplayLargestAmountOfMoney()))
                 .setText(R.id.tv_time, TimeUtil.format("HH:mm dd/MM/yyyy",item.getHistoryTime()))
-                .setText(R.id.tv_open, AppInfoUtil.checkAppInstalled(item.getPacket())?"Duka":"Segera Pinjam");
+                .setText(R.id.tv_open, AppInfoUtil.checkAppInstalled(item.getPacket())?"Buka":"Segera Pinjam");
     }
 }
